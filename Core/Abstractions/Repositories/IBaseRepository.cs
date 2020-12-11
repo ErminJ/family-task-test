@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ namespace Core.Abstractions.Repositories
         /// </summary>
         /// <returns><see cref="TEntity"/></returns>
         Task<TEntity> ToSingleAsync(CancellationToken cancellationToken = default);
+
+        TRepository Include(Expression<Func<TEntity, object>> includeExpression);
 
         /// <summary>
         /// Returns a list of <see cref="TEntity"/> based on the current query.

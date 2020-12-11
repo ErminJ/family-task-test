@@ -45,26 +45,30 @@
 </style>
 
 <div class="task-wrapper">
-    @foreach (var item in tasks)
+    @if (tasks != null && tasks.Count > 0)
     {
-        <div class="task-item p-3 my-3 row m-0">
-            <div class="col-10 p-0">
-                <Check TValue="bool" Checked="@item.IsDone" CheckedChanged="@(val => ToggleTask(item))">
-                    <span class="@(item.IsDone ? "done-text" : "")">@item.Text</span>
-                </Check>
+        @foreach (var item in tasks)
+        {
+            <div class="task-item p-3 my-3 row m-0" draggable="true" title="@item.Id" @ondragstart="@(() => HandleDragStart(item))">
+                <div class="col-10 p-0">
+                    <Check TValue="bool" Checked="@item.IsComplete" CheckedChanged="@(val => ToggleTask(item))">
+                        <span class="@(item.IsComplete ? "done-text" : "")">@item.Subject</span>
+                    </Check>
+                </div>
+                <div class="col-2 p-0 d-flex justify-content-end align-items-center">
+                    @if (item.AssignedMemberId != null)
+                    {
+                        <div class="avtar mr-1" style="background-color: @item.AssignedMember.Avatar;"></div>
+                    }
+                    <img class="delete-icon" src="/assets/images/delete-icon.svg"/>
+                </div>
             </div>
-            <div class="col-2 p-0 d-flex justify-content-end align-items-center">
-                @if (item.Member != null) {
-                    <div class="avtar mr-1" style="background-color: @selectedMember.Avatar;"></div>
-                }
-                <img class="delete-icon" src="/assets/images/delete-icon.svg"/>
-            </div>
-        </div>
+        }
     }
 </div>
 
 @code  {
-    private List<TaskModel> tasks = new List<TaskModel>();
+    private List<TaskVm> tasks = new List<TaskVm>();
     private MemberVm selectedMember;
 
     protected override Task OnInitializedAsync()
@@ -75,7 +79,7 @@
         return base.OnInitializedAsync();
     }
 
-    private void ToggleTask(TaskModel model)
+    private void ToggleTask(TaskVm model)
     {
         taskService.ToggleTask(model.Id);
         StateHasChanged();
@@ -97,13 +101,18 @@
 
         if (selectedMember == null || selectedMember.Id == Guid.Empty)
         {
-            tasks = taskService.Tasks;
+            tasks = taskService.Tasks.ToList();
             StateHasChanged();
             return;
         };
 
-        tasks = taskService.Tasks.Where(t => t.Member == selectedMember.Id).ToList();
+        tasks = taskService.Tasks.Where(t => t.AssignedMemberId == selectedMember.Id).ToList();
         StateHasChanged();
+    }
+
+    private void HandleDragStart(TaskVm selectedTask)
+    {
+        taskService.SelectTask(selectedTask);
     }
 
 }

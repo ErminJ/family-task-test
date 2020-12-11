@@ -2,6 +2,7 @@
 using Domain.DataModels;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace DataLayer
@@ -23,6 +24,9 @@ namespace DataLayer
             return base.Reset();
         }
 
-       
+        IMemberRepository IBaseRepository<Guid, Member, IMemberRepository>.Include(Expression<Func<Member, object>> includeExpression)
+        {
+            return base.Include(includeExpression);
+        }
     }
 }

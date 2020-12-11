@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,7 +46,7 @@ namespace DataLayer
 
         public async Task<IEnumerable<TEntity>> ToListAsync(CancellationToken cancellationToken = default)
         {
-            return await
+            return await 
                 Query.ToListAsync(cancellationToken);
         }
       
@@ -119,6 +120,12 @@ namespace DataLayer
         public TRepository Reset()
         {
             Query = Context.Set<TEntity>().AsQueryable();
+            return this as TRepository;
+        }
+
+        public TRepository Include(Expression<Func<TEntity, object>> includeExpression)
+        {
+            Query = Query.Include(includeExpression);
             return this as TRepository;
         }
 

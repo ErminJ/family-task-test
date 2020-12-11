@@ -93,12 +93,12 @@ namespace WebClient.Services
                 UpdateMemberFailed?.Invoke(this, "The creation was successful, but we can no longer get an updated list of members from the server.");
             }
 
-            UpdateMemberFailed?.Invoke(this, "Unable to create record.");
+            CreateMemberFailed?.Invoke(this, "Unable to create record.");
         }
 
         public void SelectMember(Guid id)
         {
-            if (members.All(memberVm => memberVm.Id != id)) return;
+            if (members.All(memberVm => memberVm.Id != id)) SelectNullMember();
             {
                 SelectedMember = members.SingleOrDefault(memberVm => memberVm.Id == id);
                 SelectedMemberChanged?.Invoke(this, null);
